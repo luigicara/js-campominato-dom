@@ -13,49 +13,72 @@ btnPlay.addEventListener('click',
 
         resoconto.innerHTML = "";
 
-        let divsCollection = [];
-
         let pointsArr = [];
+
+        let divsCollection;
 
         let maxBox = checkDifficulty();
 
         let arrBomb = genRandomNumbers(16, 1, maxBox);
 
         console.log(arrBomb);
+
+        let result;
         
         for (let i = 0; i < maxBox; i++) {
-            let newBox = createBox(difficulty.value, i + 1, divsCollection);
+            let newBox = createBox(difficulty.value, i + 1);
 
             newBox.innerHTML = i + 1;
+
+            divsCollection = document.getElementsByClassName("box");
             
             let div = divsCollection[i];
 
-            div.addEventListener('click',
-                function () {
-                
-                    if (!arrBomb.includes(parseInt(div.innerHTML))) {
+            
+            div.addEventListener('click', 
+            
+                function() {
 
-                        div.classList.add("clicked");
+                    if (result === "true") {
 
-                        pointsArr.push(div);
                     } else {
+                        if (!arrBomb.includes(parseInt(div.innerHTML))) {
 
-                        for (let n = 0; n < 16; n++) {
-                            let allRed = arrBomb[n];
-                            divsCollection[allRed - 1].classList.add("boom");
+                            div.classList.add("clicked");
+    
+                            pointsArr.push(div);
+
+                            if (pointsArr.length === maxBox - 16) {
+                                alert("Complimenti, hai vinto!");
+
+                                showBombs(arrBomb, divsCollection);
+
+                                result = "true";
+
+                            }
+                        } else {
+    
+                            showBombs(arrBomb, divsCollection);
+    
+                            alert("Hai Perso, ritenta!");
+                            let point = "punti";
+
+                            if (pointsArr.length === 1) {
+                                point = "punto";
+                            }
+                            resoconto.innerHTML = `Hai totalizzato: ${pointsArr.length} ${point}!`;
+    
+                            result = "true";
+                            
                         }
 
-                        alert("Hai Perso, ritenta!");
-
-                        resoconto.innerHTML = `Hai totalizzato: ${pointsArr.length} punti!`;
-
-                        divsCollection = [];
-
                     }
-                    
 
-                }, {once: true}
+                    
+                },{once: true}
             )
+
+            
         }
 
         btnPlay.innerHTML = "Rigioca";
@@ -81,14 +104,12 @@ function checkDifficulty() {
 
 }
 
-function createBox (classDifficult, i, array) {
+function createBox (classDifficult, i) {
     let div = document.createElement("div");
 
     div.classList.add("box", `box--${i}`, classDifficult);
 
     container.appendChild(div);
-
-    array.push(div);
 
     return div
 }
@@ -112,3 +133,9 @@ function genRandomNumbers(quantity, minNum, maxNum) {
     return newArr
 }
 
+function showBombs(bombArray, divsArray) {
+    for (let n = 0; n < 16; n++) {
+        let allRed = bombArray[n];
+        divsArray[allRed - 1].classList.add("boom");
+    }
+}
